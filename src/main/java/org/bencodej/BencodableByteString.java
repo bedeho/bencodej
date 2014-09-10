@@ -1,9 +1,10 @@
 package org.bencodej;
 
-import org.bencodej.exception.EmptyIntegerException;
-import org.bencodej.exception.InvalidDelimiterException;
+import org.bencodej.exception.EmptyLengthFieldException;
+import org.bencodej.exception.LenthFieldToGreatException;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * Created by bedeho on 10.09.2014.
@@ -11,63 +12,96 @@ import java.nio.ByteBuffer;
 public class BencodableByteString extends BencodableObject {
 
     /**
-     * Byte string value
+     * Byte string value.
      */
-    private byte[] byteString;
+    private byte[] string;
 
-    public BencodableByteString(byte[] byteString) {
-        this.byteString = byteString;
+    /**
+     * Do not load a byte string which has a length field greater
+     * than this.
+     */
+    private final static int MAX_LENGTH_FIELD_TO_TRUST = 1000;
+
+    public BencodableByteString(byte[] string) {
+        this.string = string;
     }
 
-    public BencodableByteString(ByteBuffer src) throws InvalidDelimiterException {
+    public BencodableByteString(ByteBuffer src) throws EmptyLengthFieldException, LenthFieldToGreatException {
 
-        // Get leading byte
-        char delimiter = src.getChar();
-
-        // Check that we have correct delimiter
-        if(delimiter != 'i')
-            throw new InvalidDelimiterException(delimiter);
-
-        // Get possible negative sign
-        char possiblyNegativeSign = src.getChar();
-        boolean isNegativeInteger = false;
-
-        if(possiblyNegativeSign == '-')
-            isNegativeInteger = true;
-        else
-            src.position(src.position() - 1); // rewind buffer position one step, since we read leading digit
-
-        // Find end of number
-        String digits = "";
+        // Find length field
+        String lengthFiledDigits = "";
         char lastDigit = src.getChar();
-        while(lastDigit != 'e')
-            digits += src.getChar();
+        while(lastDigit != ':')
+            lengthFiledDigits += src.getChar();
 
         // Check that we read at least one digit
-        if(digits.length() == 1)
-            throw new EmptyIntegerException();
+        if(lengthFiledDigits.length() == 0)
+            throw new EmptyLengthFieldException();
 
-        // Remove trailing 'e' from digits
-        digits = digits.substring(0, digits.length() - 2);
+        // Recover value
+        int lengthField = Integer.parseInt(lengthFiledDigits);
 
-        // Convert to integer
-        this.value =  Integer.parseInt(digits) * (isNegativeInteger ? -1 : 1);
+        // Discord length value to great
+        if(lengthField > MAX_LENGTH_FIELD_TO_TRUST)
+            throw new LenthFieldToGreatException();
+
+        // Read content
+        this.string = new byte[lengthField];
+
+        for(int i = 0;i < lengthField;i++)
+            string[i] = src.get();
     }
 
-    public ByteBuffer bencode() {
+    public byte..[] bencode() {
 
         // Build bencoding representation of integer
-        String bencoding = "i" + this.value + "e";
+        String bencoding = string.length + ":" + string;
 
         // Put in buffer and return
-        return ByteBuffer.wrap(bencoding.getBytes());
+        return bencoding.getBytes();
+    }
+
+    /**
+     * Orders objects, which is necessary so that
+     * objects of this class can be assured to appear
+     * lexicographically in the bencoding of dictionaries.
+     * @param s the object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+     */
+    @Override
+    public int compareTo(BencodableByteString s) {
+
+    }
+
+    /**
+     * Tests for equality, which is necessary so
+     * objects of this class can serve as keys
+     * in BencodableDictionary hashmap.
+     * @param o the object to test equality with.
+     * @return true iff both underlying byte arrays are of equal length and have equal content.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BencodableByteString)) return false;
+
+        BencodableByteString that = (BencodableByteString) o;
+
+        if (!Arrays.equals(string, that.string)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(string);
     }
 
     public byte[] getValue() {
-        return byteString;
+        return string;
     }
 
     public void setValue(byte[] byteString) {
-        this.byteString = byteString;
+        this.string = byteString;
     }
 }

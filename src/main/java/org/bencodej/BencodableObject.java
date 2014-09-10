@@ -43,12 +43,19 @@ public abstract class BencodableObject {
         else if(delimiter <= '9' && delimiter >= '0')
             return new BencodableByteString(src);
         else
-            throw new InvalidDelimiterException(delimiter);
+            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.STOP);
     }
 
     /**
      * Bencode this object.
      * @return buffer with bencoding
      */
-    abstract public ByteBuffer bencode();
+    abstract public byte [] bencode();
+
+    /**
+     * Equality testing routine, used in BencodableDictionary hashmap.
+     * @param o to compare with
+     * @return true iff they have the same content
+     */
+    abstract boolean equals(BencodableObject o);
 }

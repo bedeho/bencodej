@@ -28,7 +28,7 @@ public class BencodableList extends BencodableObject {
 
         // Check that we have correct delimiter
         if(delimiter != 'l')
-            throw new InvalidDelimiterException(delimiter);
+            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.START);
 
         // Read objects until we find end of list
         this.list = new LinkedList<BencodableObject>();
@@ -42,7 +42,9 @@ public class BencodableList extends BencodableObject {
         }
 
         // Consume ending 'e'
-        src.getChar();
+        delimiter = src.getChar();
+        if(!(delimiter == 'e'))
+            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.STOP);
     }
 
     public ByteBuffer bencode() {

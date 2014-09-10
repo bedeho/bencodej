@@ -26,7 +26,7 @@ public class BencodableInteger extends BencodableObject {
 
         // Check that we have correct delimiter
         if(delimiter != 'i')
-            throw new InvalidDelimiterException(delimiter);
+            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.START);
 
         // Get possible negative sign
         char possiblyNegativeSign = src.getChar();
@@ -37,30 +37,27 @@ public class BencodableInteger extends BencodableObject {
         else
             src.position(src.position() - 1); // rewind buffer position one step, since we read leading digit
 
-        // Find end of number
+        // Find end of integer
         String digits = "";
         char lastDigit = src.getChar();
         while(lastDigit != 'e')
             digits += src.getChar();
 
         // Check that we read at least one digit
-        if(digits.length() == 1)
+        if(digits.length() == 0)
             throw new EmptyIntegerException();
 
-        // Remove trailing 'e' from digits
-        digits = digits.substring(0, digits.length() - 2);
-
         // Convert to integer
-        this.value =  Integer.parseInt(digits) * (isNegativeInteger ? -1 : 1);
+        this.value = Integer.parseInt(digits) * (isNegativeInteger ? -1 : 1);
     }
 
-    public ByteBuffer bencode() {
+    public byte [] bencode() {
 
         // Build bencoding representation of integer
         String bencoding = "i" + this.value + "e";
 
         // Put in buffer and return
-        return ByteBuffer.wrap(bencoding.getBytes());
+        return bencoding.getBytes();
     }
 
     public int getValue() {
