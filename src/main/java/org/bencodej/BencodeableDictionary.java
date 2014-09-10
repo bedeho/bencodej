@@ -5,13 +5,15 @@ import org.bencodej.exception.InvalidDelimiterException;
 import org.bencodej.exception.NonLexicographicalKeyOrderException;
 
 import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
  * Created by bedeho on 10.09.2014.
  */
-public class BencodeableDictionary {
+public class BencodeableDictionary extends BencodableObject {
 
     /**
      * Map of bencodable objects
@@ -43,7 +45,7 @@ public class BencodeableDictionary {
             BencodableByteString key = new BencodableByteString(src);
 
             // Check that lexical ordering is preserved
-            if(lastKey != null && key.compareTo(lastKey) >> 0)
+            if(lastKey != null && key.compareTo(lastKey) > 0)
                 throw new NonLexicographicalKeyOrderException();
 
             // Decode value object
@@ -59,10 +61,8 @@ public class BencodeableDictionary {
             throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.STOP);
     }
 
-    public String bencode() {
-
-        // Start bencoding with list delimiter
-        String bencoding = "d";
+    @Override
+    public byte [] bencode() {
 
         // Recover keys and order them
         LinkedList<BencodableByteString> orderedKeyList = new LinkedList<BencodableByteString>();
@@ -70,24 +70,22 @@ public class BencodeableDictionary {
         for(BencodableByteString s : map.keySet())
                 orderedKeyList.add(s);
 
-        orderedKeyList.sort();
+        // Sort
+        Collections.sort(orderedKeyList);
 
         // Iterate keys and dump bencoding of values
+        LinkedList<BencodableObject> list = new LinkedList<BencodableObject>();
+
         for(BencodableByteString s : orderedKeyList) {
 
-            bencoding += s.bencode();
+            // Add key
+            list.add(s);
 
-            BencodableObject o = map.get(s);
-
-            bencoding += o;
-
+            // Add Value
+            list.add(map.get(s));
         }
 
-        // end bencoding with list ender
-        bencoding += "e";
-
-        // Put in buffer and return
-        return bencoding.getBytes();
+        return super.concatenateBencodingsIntoBencoding('d', list);
     }
 
     public HashMap<BencodableByteString,BencodableObject> getDictionary() {

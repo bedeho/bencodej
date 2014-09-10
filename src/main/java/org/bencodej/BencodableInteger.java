@@ -51,6 +51,7 @@ public class BencodableInteger extends BencodableObject {
         this.value = Integer.parseInt(digits) * (isNegativeInteger ? -1 : 1);
     }
 
+    @Override
     public byte [] bencode() {
 
         // Build bencoding representation of integer

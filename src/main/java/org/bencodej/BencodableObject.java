@@ -4,6 +4,7 @@ import org.bencodej.exception.DecodingBencodingException;
 import org.bencodej.exception.InvalidDelimiterException;
 
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
 
 /**
  * Created by bedeho on 10.09.2014.
@@ -39,11 +40,49 @@ public abstract class BencodableObject {
         else if(delimiter == 'l')
             return new BencodableList(src);
         else if(delimiter == 'd')
-            return new BencodableDictionary(src);
+            return new BencodeableDictionary(src);
         else if(delimiter <= '9' && delimiter >= '0')
             return new BencodableByteString(src);
         else
-            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.STOP);
+            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.START);
+    }
+
+    /**
+     * Bencodes list of objects as specified by paramter. This is a routines for list and dictionary subclasses of this class.
+     * @param startingDelimiter delimiter, either 'l' or 'd',  that should be used in this encoding
+     * @param bencodableObjectList list of bencodable objects
+     * @return final bencoding
+     */
+    protected static byte [] concatenateBencodingsIntoBencoding(char startingDelimiter, LinkedList<BencodableObject> bencodableObjectList) {
+
+        // Count total size
+        int totalByteLength = 2;
+        for(BencodableObject o: bencodableObjectList)
+            totalByteLength += o.bencode().length;
+
+        // Allocate space for bencodableObjectList
+        byte [] totalBencoding = new byte[totalByteLength];
+
+        // Set delimiters
+        totalBencoding[0] = (byte)startingDelimiter;
+        totalBencoding[totalBencoding.length - 1] = 'e';
+
+        // Copy bencoding of list objects into buffer
+        int position = 1;
+        for(BencodableObject o: bencodableObjectList) {
+
+            // Bencode object
+            byte [] bencoding = o.bencode();
+
+            // Copy into bigger buffer
+            System.arraycopy(bencoding, 0, totalBencoding, position, bencoding.length);
+
+            // Keep track of position
+            position += bencoding.length;
+        }
+
+        // Return result
+        return totalBencoding;
     }
 
     /**
@@ -51,11 +90,4 @@ public abstract class BencodableObject {
      * @return buffer with bencoding
      */
     abstract public byte [] bencode();
-
-    /**
-     * Equality testing routine, used in BencodableDictionary hashmap.
-     * @param o to compare with
-     * @return true iff they have the same content
-     */
-    abstract boolean equals(BencodableObject o);
 }

@@ -9,21 +9,21 @@ import java.util.Arrays;
 /**
  * Created by bedeho on 10.09.2014.
  */
-public class BencodableByteString extends BencodableObject {
+public class BencodableByteString extends BencodableObject implements Comparable<BencodableByteString> {
 
     /**
-     * Byte string value.
+     * Byte byteString value.
      */
-    private byte[] string;
+    private byte[] byteString;
 
     /**
-     * Do not load a byte string which has a length field greater
+     * Do not load a byte byteString which has a length field greater
      * than this.
      */
     private final static int MAX_LENGTH_FIELD_TO_TRUST = 1000;
 
-    public BencodableByteString(byte[] string) {
-        this.string = string;
+    public BencodableByteString(byte[] byteString) {
+        this.byteString = byteString;
     }
 
     public BencodableByteString(ByteBuffer src) throws EmptyLengthFieldException, LenthFieldToGreatException {
@@ -46,16 +46,17 @@ public class BencodableByteString extends BencodableObject {
             throw new LenthFieldToGreatException();
 
         // Read content
-        this.string = new byte[lengthField];
+        this.byteString = new byte[lengthField];
 
         for(int i = 0;i < lengthField;i++)
-            string[i] = src.get();
+            byteString[i] = src.get();
     }
 
-    public byte..[] bencode() {
+    @Override
+    public byte[] bencode() {
 
         // Build bencoding representation of integer
-        String bencoding = string.length + ":" + string;
+        String bencoding = byteString.length + ":" + byteString;
 
         // Put in buffer and return
         return bencoding.getBytes();
@@ -68,9 +69,24 @@ public class BencodableByteString extends BencodableObject {
      * @param s the object to be compared.
      * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
      */
-    @Override
     public int compareTo(BencodableByteString s) {
 
+        byte[] otherByteString = s.getByteString();
+
+        // Iterate part where both are long enough
+        int shortestLength = Math.min(byteString.length, otherByteString.length);
+
+        for(int i = 0;i < shortestLength;i++) {
+
+            // Byte comparison
+            int diff = (int)byteString[i] - (int)otherByteString[i];
+
+            if(diff != 0)
+                return diff;
+        }
+
+        // Compare by length
+        return byteString.length - otherByteString.length;
     }
 
     /**
@@ -87,21 +103,21 @@ public class BencodableByteString extends BencodableObject {
 
         BencodableByteString that = (BencodableByteString) o;
 
-        if (!Arrays.equals(string, that.string)) return false;
+        if (!Arrays.equals(byteString, that.byteString)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(string);
+        return Arrays.hashCode(byteString);
     }
 
-    public byte[] getValue() {
-        return string;
+    public byte[] getByteString() {
+        return byteString;
     }
 
-    public void setValue(byte[] byteString) {
-        this.string = byteString;
+    public void setByteString(byte[] byteString) {
+        this.byteString = byteString;
     }
 }

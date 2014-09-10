@@ -47,20 +47,8 @@ public class BencodableList extends BencodableObject {
             throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.STOP);
     }
 
-    public ByteBuffer bencode() {
-
-        // Start bencoding with list delimiter
-        String bencoding = "l";
-
-        // Iterate objects in list and add bencoding of each item
-        for(BencodableObject o: list)
-            bencoding += o.bencode().toString();
-
-        // end bencoding with list ender
-        bencoding += "e";
-
-        // Put in buffer and return
-        return ByteBuffer.wrap(bencoding.getBytes());
+    public byte [] bencode() {
+        return super.concatenateBencodingsIntoBencoding('l', list);
     }
 
     public LinkedList<BencodableObject> getList() {
