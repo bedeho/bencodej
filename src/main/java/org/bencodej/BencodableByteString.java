@@ -8,18 +8,18 @@ import java.nio.ByteBuffer;
 /**
  * Created by bedeho on 10.09.2014.
  */
-public class BencodableInteger extends BencodableObject {
+public class BencodableByteString extends BencodableObject {
 
     /**
-     * Integer value
+     * Byte string value
      */
-    private int value;
+    private byte[] byteString;
 
-    public BencodableInteger(int value) {
-        this.value = value;
+    public BencodableByteString(byte[] byteString) {
+        this.byteString = byteString;
     }
 
-    public BencodableInteger(ByteBuffer src) throws InvalidDelimiterException, EmptyIntegerException {
+    public BencodableByteString(ByteBuffer src) throws InvalidDelimiterException {
 
         // Get leading byte
         char delimiter = src.getChar();
@@ -63,11 +63,11 @@ public class BencodableInteger extends BencodableObject {
         return ByteBuffer.wrap(bencoding.getBytes());
     }
 
-    public int getValue() {
-        return value;
+    public byte[] getValue() {
+        return byteString;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public void setValue(byte[] byteString) {
+        this.byteString = byteString;
     }
 }

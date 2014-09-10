@@ -30,7 +30,7 @@ public abstract class BencodableObject {
     public static BencodableObject decode(ByteBuffer src) throws DecodingBencodingException {
 
         // Get leading byte, without advancing position
-        char delimiter = src.getChar(0);
+        char delimiter = src.getChar(src.position());
 
         // Call upon the correct constructor, or throw
         // exception if delimiter is not recognized.
@@ -48,8 +48,7 @@ public abstract class BencodableObject {
 
     /**
      * Bencode this object.
-     * @param o object
      * @return buffer with bencoding
      */
-    abstract public ByteBuffer bencode(BencodableObject o);
+    abstract public ByteBuffer bencode();
 }
