@@ -15,7 +15,7 @@ public class InvalidDelimiterException extends DecodingBencodingException {
 
     /**
      * Type of
-     * @param invalidDelimiter
+     * @param invalidDelimiter delimiter found
      */
 
     public InvalidDelimiterException(byte invalidDelimiter) {

@@ -15,6 +15,7 @@ public abstract class BencodableObject {
      * Decodes bencoding.
      * @param src bencoding
      * @return decoded object
+     * @throws DecodingBencodingException if bencoding is malformed
      */
     public static BencodableObject decode(byte[] src) throws DecodingBencodingException {
         return decode(ByteBuffer.wrap(src));
@@ -27,6 +28,7 @@ public abstract class BencodableObject {
      * is set to where last successful read was made.
      * @param src bencoding
      * @return decoded object
+     * @throws DecodingBencodingException if bencoding is malformed
      */
     public static BencodableObject decode(ByteBuffer src) throws DecodingBencodingException {
 

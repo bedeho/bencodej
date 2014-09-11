@@ -56,7 +56,7 @@ public class BencodableList extends BencodableObject {
     /**
      * Get list of bencodable objects.
      * Altering list alters this object correspondingly.
-     * @return
+     * @return linked list of objects
      */
     public LinkedList<BencodableObject> getList() {
         return list;
