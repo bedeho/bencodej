@@ -14,11 +14,11 @@ public class BencodableListTest {
 
     private BencodableList FIRST;
     private BencodableObject [] FIRST_LIST = {new BencodableInteger(1), new BencodableByteString(new byte[] {'g','f','3','4','5'}), new BencodableInteger(3)};
-    private byte [] FIRST_BENCODING = {'l','i','1','e','5',':','g','f','3','4','5','i','3','e','e'}; //"l i1e 5:gf345 i3e e"
+    private byte [] FIRST_BENCODING = {'l','i','1','e','5',':','g','f','3','4','5','i','3','e','e'}; //l i1e 5:gf345 i3e e
 
     private BencodableList SECOND;
     private BencodableObject [] SECOND_LIST = {new BencodableInteger(123), new BencodableByteString(new byte [] {'D','D','W'}), new BencodableInteger(-5)};
-    private byte [] SECOND_BENCODING = "l i123e 3:DDW i-5e e".replaceAll(" ", "").getBytes();
+    private byte [] SECOND_BENCODING = {'l','i','1','2','3','e','3',':','D','D','W','i','-','5','e','e'}; //l i123e 3:DDW i-5e e
 
     @Before
     public void setUp() throws Exception {

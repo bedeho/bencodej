@@ -46,7 +46,7 @@ public class BencodeableDictionary extends BencodableObject {
             BencodableByteString key = new BencodableByteString(src);
 
             // Check that lexical ordering is preserved
-            if(lastKey != null && key.compareTo(lastKey) > 0)
+            if(lastKey != null && key.compareTo(lastKey) < 0)
                 throw new NonLexicographicalKeyOrderException();
 
             // Decode value object
@@ -54,6 +54,9 @@ public class BencodeableDictionary extends BencodableObject {
 
             // Add to list
             map.put(key, value);
+
+            // Save this key as last key
+            lastKey = key;
         }
 
         // Consume ending 'e'
