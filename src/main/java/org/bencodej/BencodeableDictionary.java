@@ -27,11 +27,11 @@ public class BencodeableDictionary extends BencodableObject {
     public BencodeableDictionary(ByteBuffer src) throws DecodingBencodingException {
 
         // Get leading byte
-        char delimiter = src.getChar();
+        byte delimiter = src.get();
 
         // Check that we have correct delimiter
         if(delimiter != 'd')
-            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.START);
+            throw new InvalidDelimiterException(delimiter);
 
         // Read objects until we find end of list
         this.map = new HashMap<BencodableByteString,BencodableObject>();
@@ -39,7 +39,7 @@ public class BencodeableDictionary extends BencodableObject {
         // Last key read, is used to check lexicographic ordering
         BencodableByteString lastKey = null;
 
-        while(src.getChar(src.position()) != 'e') { // read without consuming
+        while(src.get(src.position()) != 'e') { // read without consuming
 
             // Decode key object
             BencodableByteString key = new BencodableByteString(src);
@@ -56,9 +56,7 @@ public class BencodeableDictionary extends BencodableObject {
         }
 
         // Consume ending 'e'
-        delimiter = src.getChar();
-        if(!(delimiter == 'e'))
-            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.STOP);
+        delimiter = src.get();
     }
 
     @Override
@@ -85,7 +83,7 @@ public class BencodeableDictionary extends BencodableObject {
             list.add(map.get(s));
         }
 
-        return super.concatenateBencodingsIntoBencoding('d', list);
+        return super.concatenateBencodingsIntoBencoding((byte)'d', list);
     }
 
     public HashMap<BencodableByteString,BencodableObject> getDictionary() {

@@ -2,6 +2,7 @@ package org.bencodej;
 
 import org.bencodej.exception.EmptyIntegerException;
 import org.bencodej.exception.InvalidDelimiterException;
+import org.bencodej.exception.NegativeZeroException;
 
 import java.nio.ByteBuffer;
 
@@ -19,17 +20,17 @@ public class BencodableInteger extends BencodableObject {
         this.value = value;
     }
 
-    public BencodableInteger(ByteBuffer src) throws InvalidDelimiterException, EmptyIntegerException {
+    public BencodableInteger(ByteBuffer src) throws InvalidDelimiterException, EmptyIntegerException, NegativeZeroException {
 
         // Get leading byte
-        char delimiter = src.getChar();
+        byte delimiter = src.get();
 
         // Check that we have correct delimiter
         if(delimiter != 'i')
-            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.START);
+            throw new InvalidDelimiterException(delimiter);
 
         // Get possible negative sign
-        char possiblyNegativeSign = src.getChar();
+        byte possiblyNegativeSign = src.get();
         boolean isNegativeInteger = false;
 
         if(possiblyNegativeSign == '-')
@@ -39,16 +40,22 @@ public class BencodableInteger extends BencodableObject {
 
         // Find end of integer
         String digits = "";
-        char lastDigit = src.getChar();
-        while(lastDigit != 'e')
-            digits += src.getChar();
+        byte lastDigit;
+        while((lastDigit = src.get()) != 'e')
+            digits += (char)lastDigit;
 
         // Check that we read at least one digit
         if(digits.length() == 0)
             throw new EmptyIntegerException();
 
+        int digitsValue = Integer.parseInt(digits);
+
+        // Check that zero has no negative sign
+        if(digitsValue == 0 && isNegativeInteger)
+            throw new NegativeZeroException();
+
         // Convert to integer
-        this.value = Integer.parseInt(digits) * (isNegativeInteger ? -1 : 1);
+        this.value = digitsValue * (isNegativeInteger ? -1 : 1);
     }
 
     @Override

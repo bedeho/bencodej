@@ -31,7 +31,7 @@ public abstract class BencodableObject {
     public static BencodableObject decode(ByteBuffer src) throws DecodingBencodingException {
 
         // Get leading byte, without advancing position
-        char delimiter = src.getChar(src.position());
+        byte delimiter = src.get(src.position());
 
         // Call upon the correct constructor, or throw
         // exception if delimiter is not recognized.
@@ -44,7 +44,7 @@ public abstract class BencodableObject {
         else if(delimiter <= '9' && delimiter >= '0')
             return new BencodableByteString(src);
         else
-            throw new InvalidDelimiterException(delimiter, InvalidDelimiterException.DelimiterType.START);
+            throw new InvalidDelimiterException(delimiter);
     }
 
     /**
@@ -53,7 +53,7 @@ public abstract class BencodableObject {
      * @param bencodableObjectList list of bencodable objects
      * @return final bencoding
      */
-    protected static byte [] concatenateBencodingsIntoBencoding(char startingDelimiter, LinkedList<BencodableObject> bencodableObjectList) {
+    protected static byte [] concatenateBencodingsIntoBencoding(byte startingDelimiter, LinkedList<BencodableObject> bencodableObjectList) {
 
         // Count total size
         int totalByteLength = 2;

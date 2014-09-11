@@ -1,7 +1,7 @@
 package org.bencodej;
 
 import org.bencodej.exception.EmptyLengthFieldException;
-import org.bencodej.exception.LenthFieldToGreatException;
+import org.bencodej.exception.LengthFieldToGreatException;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -20,19 +20,19 @@ public class BencodableByteString extends BencodableObject implements Comparable
      * Do not load a byte byteString which has a length field greater
      * than this.
      */
-    private final static int MAX_LENGTH_FIELD_TO_TRUST = 1000;
+    public final static int MAX_LENGTH_FIELD_TO_TRUST = 1000;
 
     public BencodableByteString(byte[] byteString) {
         this.byteString = byteString;
     }
 
-    public BencodableByteString(ByteBuffer src) throws EmptyLengthFieldException, LenthFieldToGreatException {
+    public BencodableByteString(ByteBuffer src) throws EmptyLengthFieldException, LengthFieldToGreatException {
 
         // Find length field
         String lengthFiledDigits = "";
-        char lastDigit = src.getChar();
-        while(lastDigit != ':')
-            lengthFiledDigits += src.getChar();
+        byte lastDigit;
+        while((lastDigit = src.get()) != ':')
+            lengthFiledDigits += lastDigit;
 
         // Check that we read at least one digit
         if(lengthFiledDigits.length() == 0)
@@ -43,7 +43,7 @@ public class BencodableByteString extends BencodableObject implements Comparable
 
         // Discord length value to great
         if(lengthField > MAX_LENGTH_FIELD_TO_TRUST)
-            throw new LenthFieldToGreatException();
+            throw new LengthFieldToGreatException();
 
         // Read content
         this.byteString = new byte[lengthField];
@@ -55,11 +55,28 @@ public class BencodableByteString extends BencodableObject implements Comparable
     @Override
     public byte[] bencode() {
 
-        // Build bencoding representation of integer
-        String bencoding = byteString.length + ":" + byteString;
+        // Get length field
+        byte [] lengthBytes = ("" + byteString.length).getBytes();
 
-        // Put in buffer and return
-        return bencoding.getBytes();
+        // Length of encoding
+        int bencodingLength = lengthBytes.length + 1 + byteString.length;
+
+        // Allocate space
+        byte [] bencoding = new byte[bencodingLength];
+
+        // Fill length field
+        for(int i = 0;i < lengthBytes.length;i++)
+            bencoding[i] = lengthBytes[i];
+
+        // Fill in seperate ':'
+        bencoding[lengthBytes.length] = (byte)':';
+
+        // Fill in bytes
+        for(int i = 0;i < byteString.length;i++)
+            bencoding[lengthBytes.length + 1 + i] = byteString[i];
+
+        // Return bencoding
+        return bencoding;
     }
 
     /**
