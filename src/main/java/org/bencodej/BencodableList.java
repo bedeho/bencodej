@@ -72,4 +72,21 @@ public class BencodableList extends BencodableObject {
         for(BencodableObject o: a)
             list.add(o);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BencodableList)) return false;
+
+        BencodableList that = (BencodableList) o;
+
+        if (!list.equals(that.list)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return list.hashCode();
+    }
 }

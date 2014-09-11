@@ -90,4 +90,6 @@ public abstract class BencodableObject {
      * @return buffer with bencoding
      */
     abstract public byte [] bencode();
+
+    //abstract public boolean equals(BencodableObject o);
 }

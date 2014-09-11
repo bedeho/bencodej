@@ -1,6 +1,7 @@
 package org.bencodej;
 
 import org.bencodej.exception.EmptyLengthFieldException;
+import org.bencodej.exception.InvalidLengthFieldException;
 import org.bencodej.exception.LengthFieldToGreatException;
 
 import java.nio.ByteBuffer;
@@ -26,20 +27,25 @@ public class BencodableByteString extends BencodableObject implements Comparable
         this.byteString = byteString;
     }
 
-    public BencodableByteString(ByteBuffer src) throws EmptyLengthFieldException, LengthFieldToGreatException {
+    public BencodableByteString(ByteBuffer src) throws EmptyLengthFieldException, LengthFieldToGreatException, InvalidLengthFieldException {
 
         // Find length field
         String lengthFiledDigits = "";
         byte lastDigit;
         while((lastDigit = src.get()) != ':')
-            lengthFiledDigits += lastDigit;
+            lengthFiledDigits += (char)lastDigit;
 
         // Check that we read at least one digit
         if(lengthFiledDigits.length() == 0)
             throw new EmptyLengthFieldException();
 
         // Recover value
-        int lengthField = Integer.parseInt(lengthFiledDigits);
+        int lengthField;
+        try {
+            lengthField = Integer.parseInt(lengthFiledDigits);
+        } catch (NumberFormatException e) {
+            throw new InvalidLengthFieldException();
+        }
 
         // Discord length value to great
         if(lengthField > MAX_LENGTH_FIELD_TO_TRUST)
@@ -68,7 +74,7 @@ public class BencodableByteString extends BencodableObject implements Comparable
         for(int i = 0;i < lengthBytes.length;i++)
             bencoding[i] = lengthBytes[i];
 
-        // Fill in seperate ':'
+        // Fill in separate ':'
         bencoding[lengthBytes.length] = (byte)':';
 
         // Fill in bytes

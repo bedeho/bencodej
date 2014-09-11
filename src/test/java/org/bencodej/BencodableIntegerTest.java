@@ -2,6 +2,7 @@ package org.bencodej;
 
 import org.bencodej.exception.EmptyIntegerException;
 import org.bencodej.exception.InvalidDelimiterException;
+import org.bencodej.exception.InvalidIntegerDigits;
 import org.bencodej.exception.NegativeZeroException;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +44,11 @@ public class BencodableIntegerTest {
         assertEquals(decodedNegativeInteger.getValue(), NEGATIVE.getValue());
     }
 
+    @Test(expected=InvalidDelimiterException.class)
+    public void testInvalidDelimiterException() throws Exception {
+        new BencodableInteger(ByteBuffer.wrap(new byte[] {'?','0','e'}));
+    }
+
     @Test(expected=EmptyIntegerException.class)
     public void testEmptyIntegerException() throws Exception {
         new BencodableInteger(ByteBuffer.wrap("ie".getBytes()));
@@ -53,9 +59,9 @@ public class BencodableIntegerTest {
         new BencodableInteger(ByteBuffer.wrap("i-0e".getBytes()));
     }
 
-    @Test(expected=InvalidDelimiterException.class)
-    public void testInvalidDelimiterExceptionWithWrongStart() throws Exception {
-        new BencodableInteger(ByteBuffer.wrap("x0e".getBytes()));
+    @Test(expected=InvalidIntegerDigits.class)
+    public void testInvalidIntegerDigits() throws Exception {
+        new BencodableInteger(ByteBuffer.wrap(new byte[] {'i','?','e'}));
     }
 
     @Test

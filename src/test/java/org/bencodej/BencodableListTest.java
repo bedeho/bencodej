@@ -1,6 +1,7 @@
 package org.bencodej;
 
 import org.bencodej.exception.InvalidDelimiterException;
+import org.bencodej.exception.InvalidLengthFieldException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ public class BencodableListTest {
 
     private BencodableList FIRST;
     private BencodableObject [] FIRST_LIST = {new BencodableInteger(1), new BencodableByteString(new byte[] {'g','f','3','4','5'}), new BencodableInteger(3)};
-    private byte [] FIRST_BENCODING = {'l','i','1','e','5',':','g','f','3','4','5','i','3','e','e'}; //"l i1e 5:gf345 i3e e".replaceAll(" ", "").getBytes();
+    private byte [] FIRST_BENCODING = {'l','i','1','e','5',':','g','f','3','4','5','i','3','e','e'}; //"l i1e 5:gf345 i3e e"
 
     private BencodableList SECOND;
     private BencodableObject [] SECOND_LIST = {new BencodableInteger(123), new BencodableByteString(new byte [] {'D','D','W'}), new BencodableInteger(-5)};
@@ -39,13 +40,13 @@ public class BencodableListTest {
         BencodableList decodedFirst = new BencodableList(ByteBuffer.wrap(FIRST.bencode()));
         assertEquals(decodedFirst.getList(), FIRST.getList());
 
-        //BencodableList decodedSecond = new BencodableList(ByteBuffer.wrap(SECOND.bencode()));
-        //assertEquals(decodedSecond.getList(), SECOND.getList());
+        BencodableList decodedSecond = new BencodableList(ByteBuffer.wrap(SECOND.bencode()));
+        assertEquals(decodedSecond.getList(), SECOND.getList());
     }
 
     @Test(expected=InvalidDelimiterException.class)
     public void testInvalidDelimiterException() throws Exception {
-        new BencodableInteger(ByteBuffer.wrap("xe".getBytes()));
+        new BencodableList(ByteBuffer.wrap(new byte[] {'?','e'}));
     }
 
     @Test

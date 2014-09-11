@@ -18,6 +18,7 @@ public class BencodeableDictionary extends BencodableObject {
     /**
      * Map of bencodable objects
      */
+
     private HashMap<BencodableByteString,BencodableObject> map;
 
     public BencodeableDictionary(HashMap<BencodableByteString,BencodableObject> map) {
@@ -92,5 +93,22 @@ public class BencodeableDictionary extends BencodableObject {
 
     public void setDictionary(HashMap<BencodableByteString,BencodableObject> map) {
         this.map = map;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BencodeableDictionary)) return false;
+
+        BencodeableDictionary that = (BencodeableDictionary) o;
+
+        if (!map.equals(that.map)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return map.hashCode();
     }
 }

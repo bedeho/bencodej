@@ -1,6 +1,7 @@
 package org.bencodej;
 
 import org.bencodej.exception.EmptyLengthFieldException;
+import org.bencodej.exception.InvalidLengthFieldException;
 import org.bencodej.exception.LengthFieldToGreatException;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,18 +35,15 @@ public class BencodableByteStringTest {
         assertArrayEquals(SECOND_BENCODING, SECOND.bencode());
     }
 
-
-    /*
     @Test
     public void testBufferConstructor() throws Exception {
 
-        BencodableList decodedFirst = new BencodableList(ByteBuffer.wrap(FIRST.bencode()));
-        assertEquals(decodedFirst.getList(), FIRST.getList());
+        BencodableByteString decodedFirst = new BencodableByteString(ByteBuffer.wrap(FIRST.bencode()));
+        assertArrayEquals(decodedFirst.getByteString(), FIRST.getByteString());
 
-        BencodableList decodedSecond = new BencodableList(ByteBuffer.wrap(SECOND.bencode()));
-        assertEquals(decodedSecond.getList(), SECOND.getList());
+        BencodableByteString decodedSecond = new BencodableByteString(ByteBuffer.wrap(SECOND.bencode()));
+        assertArrayEquals(decodedSecond.getByteString(), SECOND.getByteString());
     }
-    */
 
     @Test
     public void testCompareTo() throws Exception {
@@ -72,12 +70,17 @@ public class BencodableByteStringTest {
 
     @Test(expected=EmptyLengthFieldException.class)
     public void testEmptyLengthFieldException() throws Exception {
-        new BencodableByteString(ByteBuffer.wrap(":".getBytes()));
+        new BencodableByteString(ByteBuffer.wrap(new byte [] {':'}));
     }
 
     @Test(expected=LengthFieldToGreatException.class)
     public void testLengthFieldToGreatException() throws Exception {
-        new BencodableByteString(ByteBuffer.wrap(((BencodableByteString.MAX_LENGTH_FIELD_TO_TRUST + 1) + ":").getBytes()));
+        new BencodableByteString(ByteBuffer.wrap(("" + (BencodableByteString.MAX_LENGTH_FIELD_TO_TRUST + 1) + ":").getBytes()));
+    }
+
+    @Test(expected=InvalidLengthFieldException.class)
+    public void testInvalidLengthFieldException() throws Exception {
+        new BencodableByteString(ByteBuffer.wrap(new byte[] {'?',':'}));
     }
 
     @Test

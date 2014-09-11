@@ -2,6 +2,7 @@ package org.bencodej;
 
 import org.bencodej.exception.EmptyIntegerException;
 import org.bencodej.exception.InvalidDelimiterException;
+import org.bencodej.exception.InvalidIntegerDigits;
 import org.bencodej.exception.NegativeZeroException;
 
 import java.nio.ByteBuffer;
@@ -20,7 +21,7 @@ public class BencodableInteger extends BencodableObject {
         this.value = value;
     }
 
-    public BencodableInteger(ByteBuffer src) throws InvalidDelimiterException, EmptyIntegerException, NegativeZeroException {
+    public BencodableInteger(ByteBuffer src) throws InvalidDelimiterException, EmptyIntegerException, NegativeZeroException, InvalidIntegerDigits {
 
         // Get leading byte
         byte delimiter = src.get();
@@ -48,7 +49,12 @@ public class BencodableInteger extends BencodableObject {
         if(digits.length() == 0)
             throw new EmptyIntegerException();
 
-        int digitsValue = Integer.parseInt(digits);
+        int digitsValue;
+        try {
+            digitsValue = Integer.parseInt(digits);
+        } catch (NumberFormatException e) {
+            throw new InvalidIntegerDigits();
+        }
 
         // Check that zero has no negative sign
         if(digitsValue == 0 && isNegativeInteger)
@@ -74,5 +80,22 @@ public class BencodableInteger extends BencodableObject {
 
     public void setValue(int value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BencodableInteger)) return false;
+
+        BencodableInteger that = (BencodableInteger) o;
+
+        if (value != that.value) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return value;
     }
 }
