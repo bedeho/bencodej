@@ -5,7 +5,6 @@ import org.bencodej.exception.InvalidDelimiterException;
 import org.bencodej.exception.NonLexicographicalKeyOrderException;
 
 import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,17 +12,9 @@ import java.util.LinkedList;
 /**
  * Created by bedeho on 10.09.2014.
  */
-public class BencodeableDictionary extends BencodableObject {
+public class BencodeableDictionary extends HashMap<BencodableByteString,Bencodable> implements Bencodable {
 
-    /**
-     * Map of bencodable objects
-     */
-
-    private HashMap<BencodableByteString,BencodableObject> map;
-
-    public BencodeableDictionary(HashMap<BencodableByteString,BencodableObject> map) {
-        this.map = map;
-    }
+    public BencodeableDictionary() {}
 
     public BencodeableDictionary(ByteBuffer src) throws DecodingBencodingException {
 
@@ -33,9 +24,6 @@ public class BencodeableDictionary extends BencodableObject {
         // Check that we have correct delimiter
         if(delimiter != 'd')
             throw new InvalidDelimiterException(delimiter);
-
-        // Read objects until we find end of list
-        this.map = new HashMap<BencodableByteString,BencodableObject>();
 
         // Last key read, is used to check lexicographic ordering
         BencodableByteString lastKey = null;
@@ -50,10 +38,10 @@ public class BencodeableDictionary extends BencodableObject {
                 throw new NonLexicographicalKeyOrderException();
 
             // Decode value object
-            BencodableObject value = BencodableObject.decode(src);
+            Bencodable value = Bencodej.decode(src);
 
             // Add to list
-            map.put(key, value);
+            put(key, value);
 
             // Save this key as last key
             lastKey = key;
@@ -69,14 +57,14 @@ public class BencodeableDictionary extends BencodableObject {
         // Recover keys and order them
         LinkedList<BencodableByteString> orderedKeyList = new LinkedList<BencodableByteString>();
 
-        for(BencodableByteString s : map.keySet())
+        for(BencodableByteString s : keySet())
                 orderedKeyList.add(s);
 
         // Sort
         Collections.sort(orderedKeyList);
 
         // Iterate keys and dump bencoding of values
-        LinkedList<BencodableObject> list = new LinkedList<BencodableObject>();
+        LinkedList<Bencodable> list = new LinkedList<Bencodable>();
 
         for(BencodableByteString s : orderedKeyList) {
 
@@ -84,34 +72,9 @@ public class BencodeableDictionary extends BencodableObject {
             list.add(s);
 
             // Add Value
-            list.add(map.get(s));
+            list.add(get(s));
         }
 
-        return super.concatenateBencodingsIntoBencoding((byte)'d', list);
-    }
-
-    public HashMap<BencodableByteString,BencodableObject> getDictionary() {
-        return map;
-    }
-
-    public void setDictionary(HashMap<BencodableByteString,BencodableObject> map) {
-        this.map = map;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BencodeableDictionary)) return false;
-
-        BencodeableDictionary that = (BencodeableDictionary) o;
-
-        if (!map.equals(that.map)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return map.hashCode();
+        return Bencodej.concatenateBencodingsIntoBencoding((byte)'d', list);
     }
 }

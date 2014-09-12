@@ -7,9 +7,9 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
 /**
- * Created by bedeho on 10.09.2014.
+ * Created by bedeho on 12.09.2014.
  */
-public abstract class BencodableObject {
+public abstract class Bencodej {
 
     /**
      * Decodes bencoding.
@@ -17,7 +17,7 @@ public abstract class BencodableObject {
      * @return decoded object
      * @throws DecodingBencodingException if bencoding is malformed
      */
-    public static BencodableObject decode(byte[] src) throws DecodingBencodingException {
+    public static Bencodable decode(byte[] src) throws DecodingBencodingException {
         return decode(ByteBuffer.wrap(src));
     }
 
@@ -30,7 +30,7 @@ public abstract class BencodableObject {
      * @return decoded object
      * @throws DecodingBencodingException if bencoding is malformed
      */
-    public static BencodableObject decode(ByteBuffer src) throws DecodingBencodingException {
+    public static Bencodable decode(ByteBuffer src) throws DecodingBencodingException {
 
         // Get leading byte, without advancing position
         byte delimiter = src.get(src.position());
@@ -52,17 +52,17 @@ public abstract class BencodableObject {
     /**
      * Bencodes list of objects as specified by paramter. This is a routines for list and dictionary subclasses of this class.
      * @param startingDelimiter delimiter, either 'l' or 'd',  that should be used in this encoding
-     * @param bencodableObjectList list of bencodable objects
+     * @param bencodableList list of bencodable objects
      * @return final bencoding
      */
-    protected static byte [] concatenateBencodingsIntoBencoding(byte startingDelimiter, LinkedList<BencodableObject> bencodableObjectList) {
+    public static byte [] concatenateBencodingsIntoBencoding(byte startingDelimiter, LinkedList<Bencodable> bencodableList) {
 
         // Count total size
         int totalByteLength = 2;
-        for(BencodableObject o: bencodableObjectList)
+        for(Bencodable o: bencodableList)
             totalByteLength += o.bencode().length;
 
-        // Allocate space for bencodableObjectList
+        // Allocate space for bencodableList
         byte [] totalBencoding = new byte[totalByteLength];
 
         // Set delimiters
@@ -71,9 +71,9 @@ public abstract class BencodableObject {
 
         // Copy bencoding of list objects into buffer
         int position = 1;
-        for(BencodableObject o: bencodableObjectList) {
+        for(Bencodable o: bencodableList) {
 
-            // Bencode object
+            // Bencodej object
             byte [] bencoding = o.bencode();
 
             // Copy into bigger buffer
@@ -86,12 +86,4 @@ public abstract class BencodableObject {
         // Return result
         return totalBencoding;
     }
-
-    /**
-     * Bencode this object.
-     * @return buffer with bencoding
-     */
-    abstract public byte [] bencode();
-
-    //abstract public boolean equals(BencodableObject o);
 }

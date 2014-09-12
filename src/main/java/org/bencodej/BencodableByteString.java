@@ -10,7 +10,7 @@ import java.util.Arrays;
 /**
  * Created by bedeho on 10.09.2014.
  */
-public class BencodableByteString extends BencodableObject implements Comparable<BencodableByteString> {
+public class BencodableByteString implements Bencodable, Comparable<BencodableByteString> {
 
     /**
      * Byte byteString value.

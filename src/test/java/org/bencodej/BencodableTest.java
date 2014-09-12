@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class BencodableObjectTest {
+public class BencodableTest {
 
     @Before
     public void setUp() throws Exception {

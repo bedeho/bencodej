@@ -1,6 +1,5 @@
 package org.bencodej;
 
-
 import org.bencodej.exception.DecodingBencodingException;
 import org.bencodej.exception.InvalidDelimiterException;
 
@@ -10,20 +9,9 @@ import java.util.LinkedList;
 /**
  * Created by bedeho on 10.09.2014.
  */
-public class BencodableList extends BencodableObject {
+public class BencodableList extends LinkedList<Bencodable> implements Bencodable {
 
-    /**
-     * List of bencodable objects
-     */
-    private LinkedList<BencodableObject> list;
-
-    public BencodableList(LinkedList<BencodableObject> list) {
-        this.list = list;
-    }
-
-    public BencodableList(BencodableObject[] a) {
-        setList(a);
-    }
+    public BencodableList(){}
 
     public BencodableList(ByteBuffer src) throws DecodingBencodingException {
 
@@ -35,14 +23,13 @@ public class BencodableList extends BencodableObject {
             throw new InvalidDelimiterException(delimiter);
 
         // Read objects until we find end of list
-        this.list = new LinkedList<BencodableObject>();
         while(src.get(src.position()) != 'e') { // read without consuming
 
             // Decode next object
-            BencodableObject o = BencodableObject.decode(src);
+            Bencodable o = Bencodej.decode(src);
 
             // Add to list
-            list.add(o);
+            add(o);
         }
 
         // Consume ending 'e'
@@ -50,43 +37,6 @@ public class BencodableList extends BencodableObject {
     }
 
     public byte [] bencode() {
-        return super.concatenateBencodingsIntoBencoding((byte)'l', list);
-    }
-
-    /**
-     * Get list of bencodable objects.
-     * Altering list alters this object correspondingly.
-     * @return linked list of objects
-     */
-    public LinkedList<BencodableObject> getList() {
-        return list;
-    }
-
-    public void setList(LinkedList<BencodableObject> list) {
-        this.list = list;
-    }
-
-    public void setList(BencodableObject [] a) {
-        this.list = new LinkedList<BencodableObject>();
-
-        for(BencodableObject o: a)
-            list.add(o);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BencodableList)) return false;
-
-        BencodableList that = (BencodableList) o;
-
-        if (!list.equals(that.list)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return list.hashCode();
+        return Bencodej.concatenateBencodingsIntoBencoding((byte)'l', this);
     }
 }

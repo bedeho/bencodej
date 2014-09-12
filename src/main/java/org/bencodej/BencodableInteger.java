@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 /**
  * Created by bedeho on 10.09.2014.
  */
-public class BencodableInteger extends BencodableObject {
+public class BencodableInteger implements Bencodable {
 
     /**
      * Integer value

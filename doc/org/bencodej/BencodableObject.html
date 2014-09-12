@@ -99,7 +99,7 @@ var activeTableTab = "activeTableTab";
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li>org.bencodej.BencodableObject</li>
+<li>org.bencodej.Bencodable</li>
 </ul>
 </li>
 </ul>
@@ -159,7 +159,7 @@ extends java.lang.Object</pre>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>protected static byte[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../org/bencodej/BencodableObject.html#concatenateBencodingsIntoBencoding-byte-java.util.LinkedList-">concatenateBencodingsIntoBencoding</a></span>(byte&nbsp;startingDelimiter,
-                                  java.util.LinkedList&lt;<a href="../../org/bencodej/BencodableObject.html" title="class in org.bencodej">BencodableObject</a>&gt;&nbsp;bencodableObjectList)</code>
+                                  java.util.LinkedList&lt;<a href="../../org/bencodej/BencodableObject.html" title="class in org.bencodej">BencodableObject</a>&gt;&nbsp;bencodableList)</code>
 <div class="block">Bencodes list of objects as specified by paramter.</div>
 </td>
 </tr>
@@ -262,12 +262,12 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>concatenateBencodingsIntoBencoding</h4>
 <pre>protected static&nbsp;byte[]&nbsp;concatenateBencodingsIntoBencoding(byte&nbsp;startingDelimiter,
-                                                           java.util.LinkedList&lt;<a href="../../org/bencodej/BencodableObject.html" title="class in org.bencodej">BencodableObject</a>&gt;&nbsp;bencodableObjectList)</pre>
+                                                           java.util.LinkedList&lt;<a href="../../org/bencodej/BencodableObject.html" title="class in org.bencodej">BencodableObject</a>&gt;&nbsp;bencodableList)</pre>
 <div class="block">Bencodes list of objects as specified by paramter. This is a routines for list and dictionary subclasses of this class.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>startingDelimiter</code> - delimiter, either 'l' or 'd',  that should be used in this encoding</dd>
-<dd><code>bencodableObjectList</code> - list of bencodable objects</dd>
+<dd><code>bencodableList</code> - list of bencodable objects</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>final bencoding</dd>
 </dl>
