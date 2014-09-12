@@ -8,11 +8,32 @@
   <packaging>jar</packaging>
 
   <name>core</name>
+  <description>A Java Bencode Library</description>
   <url>http://maven.apache.org</url>
+  <licenses>
+      <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        <distribution>repo</distribution>
+      </license>
+  </licenses>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+  <scm>
+    <connection>scm:git:git://github.com/bedeho/bencodej.git</connection>
+    <url>http://github.com/bedeho/bencodej</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>1</id>
+      <name>Bedeho Mender</name>
+      <email>bedeho.mender@gmail.com</email>
+    </developer>
+  </developers>
 
   <dependencies>
     <dependency>
