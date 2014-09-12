@@ -115,20 +115,25 @@ public class BencodableByteString implements Bencodable, Comparable<BencodableBy
     /**
      * Tests for equality, which is necessary so
      * objects of this class can serve as keys
-     * in BencodableDictionary hashmap.
+     * in BencodableDictionary hashmap. Argument can either be
+     * a String object, or an object of the same class
      * @param o the object to test equality with.
      * @return true iff both underlying byte arrays are of equal length and have equal content.
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BencodableByteString)) return false;
 
-        BencodableByteString that = (BencodableByteString) o;
+        byte[] that;
 
-        if (!Arrays.equals(byteString, that.byteString)) return false;
+        if(o instanceof String) {
+            that = ((String) o).getBytes();
+        }else if(o instanceof BencodableByteString) {
+            that = ((BencodableByteString) o).byteString;
+        } else
+            return false;
 
-        return true;
+        return Arrays.equals(byteString, that);
     }
 
     @Override
