@@ -23,6 +23,7 @@ public class BencodableByteString implements Bencodable, Comparable<BencodableBy
      */
     public final static int MAX_LENGTH_FIELD_TO_TRUST = 1000;
 
+    public BencodableByteString(String str) { this(str.getBytes()); }
     public BencodableByteString(byte[] byteString) {
         this.byteString = byteString;
     }
